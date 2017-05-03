@@ -7,7 +7,8 @@ const fs = require('fs')
 
 const notifier = require('node-notifier');
 
- const trayActive = 'assets/trayIcon.png'
+const trayActive = 'assets/trayIcon.png'
+const iconNotification = 'assets/a_logo.png'
 
 let tray = null
 
@@ -42,9 +43,10 @@ app.on('ready', () =>
                     shellSudo("start");
                     detail(false);
                     notifier.notify({
-                      'title': '[AMANAGER]',
-                      'subtitle': 'Server Started!',
-                      'message': 'AManager start Apache server at localhost!',
+                      title: '[AMANAGER]',
+                      subtitle: 'Server Started!',
+                      message: 'AManager start Apache server at localhost!',
+                      icon: path.join(__dirname, iconNotification),
                       sound: true,
                       timeout: 3
                     });
@@ -59,9 +61,10 @@ app.on('ready', () =>
                     shellSudo("stop");
                     detail(true);
                     notifier.notify({
-                      'title': '[AMANAGER]',
-                      'subtitle': 'Server Stoped!',
-                      'message': 'AManager stop Apache server!',
+                      title: '[AMANAGER]',
+                      subtitle: 'Server Stoped!',
+                      message: 'AManager stop Apache server!',
+                      icon: path.join(__dirname, iconNotification),
                       sound: true,
                       timeout: 3
                     });
@@ -76,9 +79,10 @@ app.on('ready', () =>
                     shellSudo("restart");
                     detail(false);
                     notifier.notify({
-                      'title': '[AMANAGER]',
-                      'subtitle': 'Server Restarted!',
-                      'message': 'AManager restart Apache server!',
+                      title: '[AMANAGER]',
+                      subtitle: 'Server Restarted!',
+                      message: 'AManager restart Apache server!',
+                      icon: path.join(__dirname, iconNotification),
                       sound: true,
                       timeout: 3
                     });
@@ -113,7 +117,7 @@ app.on('ready', () =>
               menu.push({
                 label: 'Quit',
                 click: function(){
-                  dialog.showMessageBox({type: "question", buttons: ["Exit", "Continue"], title: 'Quit App', message: 'Are you sure to close AManager App?', detail: 'AManager close all Apache servers when close app'}, function(res){
+                  dialog.showMessageBox({type: "question", buttons: ["Exit", "Continue"], title: 'Quit App', message: 'Are you sure to close AManager App?', detail: 'AManager close all Apache servers when close app', icon: path.join(__dirname, iconNotification) }, function(res){
                     console.log(res)
                     if(res == 0){
                       quitApp();
