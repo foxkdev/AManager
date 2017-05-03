@@ -1,6 +1,6 @@
 # Apache Manager
 
-> Version: 1.1.2 - 3/05/2017
+> Version: 1.1.3 - 3/05/2017
 
 Apache Manager es un gestor de Apache desarrollado para facilitar el uso de servidores de Apache. AManager es de codigo abierto.
 
