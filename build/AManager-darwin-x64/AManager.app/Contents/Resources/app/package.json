@@ -1,0 +1,23 @@
+
+{
+  "name": "AManager",
+  "version": "0.1.0",
+  "main": "index.js",
+  "window": {
+        "show": false,
+        "show_in_taskbar": false
+    },
+  "dependencies": {
+    "node-notifier": "^4.6.1",
+    "shelljs": "^0.7.4",
+    "sudo-prompt": "^7.0.0"
+  },
+  "devDependencies": {
+    "electron-packager": "^8.1.0"
+  },
+  "scripts": {
+    "start": "electron .",
+    "package": "electron-packager ./ AManager darwin --out ./build --version 1.4.4 --overwrite --icon=./assets/amanager.icns"
+
+  }
+}
