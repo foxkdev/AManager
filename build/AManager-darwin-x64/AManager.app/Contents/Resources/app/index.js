@@ -7,8 +7,8 @@ const fs = require('fs')
 
 const notifier = require('node-notifier');
 
- const trayActive = 'assets/trayIcon.png'
-
+const trayActive = 'assets/trayIcon.png'
+const iconNotification = 'assets/a_logo.png'
 let tray = null
 
 
@@ -20,68 +20,83 @@ app.on('ready', () =>
 
       var start = function(){
         console.log('check');
-        detail(checkServer());
+        checkServerApache(function(status){
+          detail(status);
+        });
       }
-      var detail = function(status = true){
-        var label_status = "Started";
+      var detail = function(status){
+        var label_status = "Running";
           if(status){ //true es que esta apagado!
             label_status = "Stoped";
           }
+        var label_mysql = "Running";
           
           var menu = [
-                  {
-                  label: "Status: " + label_status,
+                {
+                  label: "Apache Server: " + label_status,
                   enabled: false,
                 },
                 {
+                  type: "separator"
+                },
+                {
                   label: "Start Apache",
-                  enabled: status,
+                  enabled: status, //apagado apache
                   click: function()
                   {
                     console.log("started");
-                    shellSudo("start");
-                    detail(false);
-                    notifier.notify({
-                      'title': '[AMANAGER]',
-                      'subtitle': 'Server Started!',
-                      'message': 'AManager start Apache server at localhost!',
-                      sound: true,
-                      timeout: 3
+                    shellSudo("start", function(){
+                      detail(false);
+                      notifier.notify({
+                        title: '[AMANAGER]',
+                        subtitle: 'Server Running!',
+                        message: 'AManager start Apache server at localhost!',
+                        icon: path.join(__dirname, iconNotification),
+                        sound: true,
+                        timeout: 3
+                      });
                     });
+                    
                   }
                 },
                 {
-                  label: "Stop Server",
-                  enabled: !status,
+                  label: "Stop Apache",
+                  enabled: !status, //encendido apache
                   click: function()
                   {
                     console.log("stoped");
-                    shellSudo("stop");
-                    detail(true);
-                    notifier.notify({
-                      'title': '[AMANAGER]',
-                      'subtitle': 'Server Stoped!',
-                      'message': 'AManager stop Apache server!',
-                      sound: true,
-                      timeout: 3
+                    shellSudo("stop", function(){
+                      detail(true);
+                      notifier.notify({
+                        title: '[AMANAGER]',
+                        subtitle: 'Server Stoped!',
+                        message: 'AManager stop Apache server!',
+                        icon: path.join(__dirname, iconNotification),
+                        sound: true,
+                        timeout: 3
+                      });
                     });
+                    
                   }
                 },
                 {
-                  label: "Restart Server",
+                  label: "Restart Apache",
                   enabled: !status,
                   click: function()
                   {
                     console.log("restarted");
-                    shellSudo("restart");
-                    detail(false);
-                    notifier.notify({
-                      'title': '[AMANAGER]',
-                      'subtitle': 'Server Restarted!',
-                      'message': 'AManager restart Apache server!',
-                      sound: true,
-                      timeout: 3
+                    shellSudo("restart", function(){
+                      detail(false);
+                      notifier.notify({
+                        title: '[AMANAGER]',
+                        subtitle: 'Server Restarted!',
+                        message: 'AManager restart Apache server!',
+                        icon: path.join(__dirname, iconNotification),
+                        sound: true,
+                        timeout: 3
+                      });
                     });
+                    
 
                   }
                 },
@@ -113,7 +128,7 @@ app.on('ready', () =>
               menu.push({
                 label: 'Quit',
                 click: function(){
-                  dialog.showMessageBox({type: "question", buttons: ["Exit", "Continue"], title: 'Quit App', message: 'Are you sure to close AManager App?', detail: 'AManager close all Apache servers when close app'}, function(res){
+                  dialog.showMessageBox({type: "question", buttons: ["Exit", "Continue"], title: 'Quit App', message: 'Are you sure to close AManager App?', detail: 'AManager close all Apache servers when close app', icon: path.join(__dirname, iconNotification)}, function(res){
                     console.log(res)
                     if(res == 0){
                       quitApp();
@@ -147,7 +162,7 @@ app.on('ready', () =>
         shellSudo(shell);
         return callback(status);
       };
-      var shellSudo = function(shell){
+      var shellSudo = function(shell, callback){
         var options = {
           name: 'AManager',
           icns: path.join(__dirname, trayActive), // (optional) 
@@ -156,20 +171,28 @@ app.on('ready', () =>
           console.log('error: '+ error);
           console.log('out: ' + stdout);
           console.log('response: ' + stderr);
+          return callback();
         });
       }
-      var checkServer = function(){
-        var check = false;
-         var s = exec("ps ax | grep httpd | grep -v grep | cut -c1-5 | paste -s -", {async:true});
-         s.stdout.on('data', function(data) {
-            /* ... do something with data ... */
-            console.log( 'iniciado');
-            check = true;
-          });
-         return check;
+      var checkServerApache = function(callback){
+         exec("ps ax | grep httpd | grep -v grep | cut -c1-5 | paste -s -", {silent: true,async: true}, function(code, stdout, stderr){
+          console.log('Exit code:', code);
+          console.log('Program output:', stdout);
+          console.log('Program stderr:', stderr);
+          var check = true;
+          if(stdout == ""){
+            console.log('empty');
+            check = true; //apagado
+          }else{
+            check  = false; //encendido
+          }
+          return callback(check);
+         });
+
+
       }
       var quitApp = function(){
-        shellSudo("stop");
+        // shellSudo("stop");
         app.quit();
       }
 
