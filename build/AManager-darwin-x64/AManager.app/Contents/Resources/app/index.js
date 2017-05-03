@@ -19,13 +19,20 @@ app.on('ready', () =>
   
 
       var start = function(){
-        shellSudo("stop"); //inicia apagado
-        //mostramos el apagado
-        detail(true);
+        console.log('check');
+        detail(checkServer());
       }
       var detail = function(status = true){
+        var label_status = "Started";
+          if(status){ //true es que esta apagado!
+            label_status = "Stoped";
+          }
           
           var menu = [
+                  {
+                  label: "Status: " + label_status,
+                  enabled: false,
+                },
                 {
                   label: "Start Apache",
                   enabled: status,
@@ -34,6 +41,13 @@ app.on('ready', () =>
                     console.log("started");
                     shellSudo("start");
                     detail(false);
+                    notifier.notify({
+                      'title': '[AMANAGER]',
+                      'subtitle': 'Server Started!',
+                      'message': 'AManager start Apache server at localhost!',
+                      sound: true,
+                      timeout: 3
+                    });
                   }
                 },
                 {
@@ -44,6 +58,13 @@ app.on('ready', () =>
                     console.log("stoped");
                     shellSudo("stop");
                     detail(true);
+                    notifier.notify({
+                      'title': '[AMANAGER]',
+                      'subtitle': 'Server Stoped!',
+                      'message': 'AManager stop Apache server!',
+                      sound: true,
+                      timeout: 3
+                    });
                   }
                 },
                 {
@@ -54,6 +75,7 @@ app.on('ready', () =>
                     console.log("restarted");
                     shellSudo("restart");
                     detail(false);
+
                   }
                 },
                 {
@@ -61,7 +83,6 @@ app.on('ready', () =>
                 },
                 {
                   label: "Go Localhost",
-                  enabled: !status,
                   click: function()
                   {
                     console.log("go localhost");
@@ -129,6 +150,16 @@ app.on('ready', () =>
           console.log('out: ' + stdout);
           console.log('response: ' + stderr);
         });
+      }
+      var checkServer = function(){
+        var check = true;
+         var s = exec("ps ax | grep httpd | grep -v grep | cut -c1-5 | paste -s -", {async:true});
+         s.stdout.on('data', function(data) {
+            /* ... do something with data ... */
+            console.log( 'iniciado');
+            check = false;
+          });
+         return check;
       }
       var quitApp = function(){
         shellSudo("stop");
