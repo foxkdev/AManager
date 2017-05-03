@@ -45,15 +45,7 @@ app.on('ready', () =>
                   click: function()
                   {
                     console.log("started");
-                    shellSudo("start");
-                    detail(false);
-                    notifier.notify({
-                      title: '[AMANAGER]',
-                      subtitle: 'Server Started!',
-                      message: 'AManager start Apache server at localhost!',
-                      icon: path.join(__dirname, iconNotification),
-                      sound: true,
-                      timeout: 3
+
                     shellSudo("start", function(){
                       detail(false);
                       notifier.notify({
@@ -74,15 +66,7 @@ app.on('ready', () =>
                   click: function()
                   {
                     console.log("stoped");
-                    shellSudo("stop");
-                    detail(true);
-                    notifier.notify({
-                      title: '[AMANAGER]',
-                      subtitle: 'Server Stoped!',
-                      message: 'AManager stop Apache server!',
-                      icon: path.join(__dirname, iconNotification),
-                      sound: true,
-                      timeout: 3
+
                     shellSudo("stop", function(){
                       detail(true);
                       notifier.notify({
@@ -103,15 +87,6 @@ app.on('ready', () =>
                   click: function()
                   {
                     console.log("restarted");
-                    shellSudo("restart");
-                    detail(false);
-                    notifier.notify({
-                      title: '[AMANAGER]',
-                      subtitle: 'Server Restarted!',
-                      message: 'AManager restart Apache server!',
-                      icon: path.join(__dirname, iconNotification),
-                      sound: true,
-                      timeout: 3
                     shellSudo("restart", function(){
                       detail(false);
                       notifier.notify({
@@ -156,7 +131,6 @@ app.on('ready', () =>
                 label: 'Quit',
                 click: function(){
                   dialog.showMessageBox({type: "question", buttons: ["Exit", "Continue"], title: 'Quit App', message: 'Are you sure to close AManager App?', detail: 'AManager close all Apache servers when close app', icon: path.join(__dirname, iconNotification) }, function(res){
-                  dialog.showMessageBox({type: "question", buttons: ["Exit", "Continue"], title: 'Quit App', message: 'Are you sure to close AManager App?', detail: 'AManager close all Apache servers when close app', icon: path.join(__dirname, iconNotification)}, function(res){
                     console.log(res)
                     if(res == 0){
                       quitApp();
