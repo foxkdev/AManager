@@ -75,6 +75,13 @@ app.on('ready', () =>
                     console.log("restarted");
                     shellSudo("restart");
                     detail(false);
+                    notifier.notify({
+                      'title': '[AMANAGER]',
+                      'subtitle': 'Server Restarted!',
+                      'message': 'AManager restart Apache server!',
+                      sound: true,
+                      timeout: 3
+                    });
 
                   }
                 },
@@ -152,12 +159,12 @@ app.on('ready', () =>
         });
       }
       var checkServer = function(){
-        var check = true;
+        var check = false;
          var s = exec("ps ax | grep httpd | grep -v grep | cut -c1-5 | paste -s -", {async:true});
          s.stdout.on('data', function(data) {
             /* ... do something with data ... */
             console.log( 'iniciado');
-            check = false;
+            check = true;
           });
          return check;
       }
