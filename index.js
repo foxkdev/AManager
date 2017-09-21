@@ -24,12 +24,13 @@ app.on('ready', () =>
           detail(status);
         });
       }
-      var detail = function(status){
+      var detail = function(status, status_mysql){
         var label_status = "Running";
-          if(status){ //true es que esta apagado!
-            label_status = "Stoped";
-          }
+        if (status) { //true es que esta apagado!
+          label_status = "Stoped";
+        }
         var label_mysql = "Running";
+
           
           var menu = [
                 {
@@ -118,6 +119,47 @@ app.on('ready', () =>
                 type: "separator"
               })
               menu.push({
+                label: "Mysql: " + label_mysql,
+                enabled: false,
+              })
+              menu.push({
+                label: 'Start Mysql',
+                click: function () {
+                  //shell.openExternal('https://github.com/kloppz')
+                  shellCommand( "mysql.server start", function () {
+                    detail(false);
+                    notifier.notify({
+                      title: '[AMANAGER]',
+                      subtitle: 'Server Started!',
+                      message: 'AManager start Mysql server!',
+                      icon: path.join(__dirname, iconNotification),
+                      sound: true,
+                      timeout: 3
+                    });
+                  });
+                }
+              })
+              menu.push({
+                label: 'Stop Mysql',
+                click: function () {
+                  //shell.openExternal('https://github.com/kloppz')
+                  shellCommand("mysql.server stop", function () {
+                    detail(false);
+                    notifier.notify({
+                      title: '[AMANAGER]',
+                      subtitle: 'Server Stopped!',
+                      message: 'AManager stop Mysql server!',
+                      icon: path.join(__dirname, iconNotification),
+                      sound: true,
+                      timeout: 3
+                    });
+                  });
+                }
+              })
+              menu.push({
+                type: "separator"
+              })
+              menu.push({
                 label: 'Version: '+app.getVersion(),
                 enabled: false
               })
@@ -164,13 +206,25 @@ app.on('ready', () =>
         shellSudo(shell);
         return callback(status);
       };
-      var shellSudo = function(shell, callback){
+      var shellSudo = function(shell, callback, command = "apachectl "){
         var options = {
           name: 'AManager',
           icns: path.join(__dirname, trayActive), // (optional) 
         };
-        sudo.exec("apachectl "+shell, options, function(error, stdout, stderr) {
+        sudo.exec(command+shell, options, function(error, stdout, stderr) {
           console.log('error: '+ error);
+          console.log('out: ' + stdout);
+          console.log('response: ' + stderr);
+          return callback();
+        });
+      }
+      var shellCommand = function(command, callback){
+        var options = {
+          name: 'AManager',
+          icns: path.join(__dirname, trayActive), // (optional) 
+        };
+        exec(command, {silent: true}, function (error, stdout, stderr) {
+          console.log('error: ' + error);
           console.log('out: ' + stdout);
           console.log('response: ' + stderr);
           return callback();
@@ -199,4 +253,5 @@ app.on('ready', () =>
       }
 
       start();
+      
 })
